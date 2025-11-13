@@ -4,6 +4,9 @@ until nc -z $DB_HOST $DB_PORT; do
     sleep 1
 done
 
+export PYTHONPATH=/project/src
+poetry run alembic upgrade head
+
 cd src
 
 if [ "$WATCH_MODE" = "True" ]; then
