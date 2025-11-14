@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tests.utils import create_activity, get_activity
@@ -8,10 +9,16 @@ from tests.utils import create_activity, get_activity
 @pytest.mark.usefixtures('clean_db')
 class TestActivityModel:
     async def test_nested_activity(self, pg_session: AsyncSession):
-        await create_activity(pg_session, 'Software development')
-        await create_activity(pg_session, 'Delivery', 1)
+        await create_activity(pg_session, 'Delivery')
+        await create_activity(pg_session, 'Development', 1)
 
         activity = await get_activity(pg_session, 2)
-        assert activity.name == 'Delivery'
+        assert activity.name == 'Development'
         assert activity.depth == 1
         assert activity.parent_id == 1
+
+    async def test_name_constraint(self, pg_session: AsyncSession):
+        await create_activity(pg_session, 'Delivery')
+
+        with pytest.raises(IntegrityError):
+            await create_activity(pg_session, 'Delivery')
