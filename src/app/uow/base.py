@@ -6,6 +6,7 @@ from app.core.database import DEFAULT_SESSION_FACTORY
 from app.repositories.activities import ActivityRepository
 from app.repositories.buildings import BuildingRepository
 from app.repositories.cities import CityRepository
+from app.repositories.organization import OrganizationRepository
 from app.repositories.streets import StreetRepository
 
 from .abc import AbstractUnitOfWork
@@ -15,6 +16,7 @@ class UnitOfWork(AbstractUnitOfWork):
     activities: ActivityRepository
     buildings: BuildingRepository
     cities: CityRepository
+    organizations: OrganizationRepository
     streets: StreetRepository
 
     _session: AsyncSession
@@ -28,6 +30,7 @@ class UnitOfWork(AbstractUnitOfWork):
         self.activities = ActivityRepository(self._session)
         self.buildings = BuildingRepository(self._session)
         self.cities = CityRepository(self._session)
+        self.organizations = OrganizationRepository(self._session)
         self.streets = StreetRepository(self._session)
 
         return await super().__aenter__()
