@@ -25,7 +25,7 @@ class TestStreetRepository:
     async def test_get_street(self, pg_session: AsyncSession):
         repo = StreetRepository(pg_session)
         await create_city(pg_session, 'Moscow')
-        await create_street(pg_session, 'Tverskaya', 1)
+        await create_street(pg_session, 1, 'Tverskaya')
 
         retrieved = await repo.get(1)
         assert retrieved.name == 'Tverskaya'
@@ -34,7 +34,7 @@ class TestStreetRepository:
     async def test_remove_street(self, pg_session: AsyncSession):
         repo = StreetRepository(pg_session)
         await create_city(pg_session, 'Moscow')
-        await create_street(pg_session, 'Tverskaya', 1)
+        await create_street(pg_session, 1, 'Tverskaya')
 
         await repo.remove(1)
 
