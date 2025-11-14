@@ -1,9 +1,29 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.activities import Activity
 from app.models.buildings import Building
 from app.models.cities import City
 from app.models.streets import Street
+
+
+async def create_activity(pg_session: AsyncSession, name: str, parent_id: int | None = None) -> None:
+    depth = 0
+    if parent_id is not None:
+        stmt = select(Activity).where(Activity.id == parent_id)
+        result = await pg_session.execute(stmt)
+        parent = result.scalar_one()
+        depth = parent.depth + 1
+
+    activity = Activity(name=name, depth=depth, parent_id=parent_id)
+    pg_session.add(activity)
+    await pg_session.commit()
+
+
+async def get_activity(pg_session: AsyncSession, id: int) -> Activity:
+    stmt = select(Activity).where(Activity.id == id)
+    result = await pg_session.execute(stmt)
+    return result.scalar_one()
 
 
 async def create_city(pg_session: AsyncSession, name: str) -> None:
