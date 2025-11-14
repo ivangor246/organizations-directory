@@ -7,6 +7,7 @@ from app.repositories.activities import ActivityRepository
 from app.repositories.buildings import BuildingRepository
 from app.repositories.cities import CityRepository
 from app.repositories.organization import OrganizationRepository
+from app.repositories.phones import PhoneRepository
 from app.repositories.streets import StreetRepository
 
 from .abc import AbstractUnitOfWork
@@ -17,6 +18,7 @@ class UnitOfWork(AbstractUnitOfWork):
     buildings: BuildingRepository
     cities: CityRepository
     organizations: OrganizationRepository
+    phones: PhoneRepository
     streets: StreetRepository
 
     _session: AsyncSession
@@ -31,6 +33,7 @@ class UnitOfWork(AbstractUnitOfWork):
         self.buildings = BuildingRepository(self._session)
         self.cities = CityRepository(self._session)
         self.organizations = OrganizationRepository(self._session)
+        self.phones = PhoneRepository(self._session)
         self.streets = StreetRepository(self._session)
 
         return await super().__aenter__()
