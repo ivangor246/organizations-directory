@@ -20,6 +20,7 @@ class OrganizationRepository(Repository[Organization]):
             .options(
                 selectinload(Organization.activities),
                 selectinload(Organization.building),
+                selectinload(Organization.phones),
             )
             .where(Organization.id == id)
         )

@@ -6,7 +6,20 @@ from app.models.activities import Activity
 from app.models.buildings import Building
 from app.models.cities import City
 from app.models.organizations import Organization, activity_organization_association
+from app.models.phones import Phone
 from app.models.streets import Street
+
+
+async def create_phone(pg_session: AsyncSession, number: str, organization_id: int) -> None:
+    phone = Phone(number=number, organization_id=organization_id)
+    pg_session.add(phone)
+    await pg_session.commit()
+
+
+async def get_phone(pg_session: AsyncSession, id: int) -> Phone:
+    stmt = select(Phone).where(Phone.id == id)
+    result = await pg_session.execute(stmt)
+    return result.scalar_one()
 
 
 async def create_organization(pg_session: AsyncSession, name: str, building_id: int) -> None:
@@ -21,6 +34,7 @@ async def get_organization(pg_session: AsyncSession, id: int) -> Organization:
         .options(
             selectinload(Organization.activities),
             selectinload(Organization.building),
+            selectinload(Organization.phones),
         )
         .where(Organization.id == id)
     )

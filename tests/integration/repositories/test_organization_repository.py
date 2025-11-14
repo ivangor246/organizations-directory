@@ -44,6 +44,7 @@ class TestOrganizationRepository:
         assert retrieved.building_id == 1
         assert retrieved.building.number == '16'
         assert retrieved.activities == []
+        assert retrieved.phones == []
 
     async def test_remove_organization(self, pg_session: AsyncSession):
         repo = OrganizationRepository(pg_session)
