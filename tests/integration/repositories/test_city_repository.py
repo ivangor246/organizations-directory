@@ -22,7 +22,6 @@ class TestCityRepository:
 
     async def test_get_city(self, pg_session: AsyncSession):
         repo = CityRepository(pg_session)
-
         await create_city(pg_session, 'Moscow')
 
         retrieved = await repo.get(1)
@@ -30,8 +29,8 @@ class TestCityRepository:
 
     async def test_remove_city(self, pg_session: AsyncSession):
         repo = CityRepository(pg_session)
-
         await create_city(pg_session, 'Moscow')
+
         await repo.remove(1)
 
         with pytest.raises(NoResultFound):
