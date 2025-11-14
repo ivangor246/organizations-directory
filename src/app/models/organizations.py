@@ -8,6 +8,7 @@ from .base import Base, str_100
 if TYPE_CHECKING:
     from .activities import Activity
     from .buildings import Building
+    from .phones import Phone
 
 
 activity_organization_association = Table(
@@ -28,5 +29,9 @@ class Organization(Base):
     activities: Mapped[list['Activity']] = relationship(
         secondary=activity_organization_association,
         back_populates='organizations',
+        passive_deletes=True,
+    )
+    phones: Mapped[list['Phone']] = relationship(
+        back_populates='organization',
         passive_deletes=True,
     )
