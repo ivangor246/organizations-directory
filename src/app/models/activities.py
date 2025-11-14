@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, str_100
+from .organizations import activity_organization_association
+
+if TYPE_CHECKING:
+    from .organizations import Organization
 
 
 class Activity(Base):
@@ -19,5 +25,10 @@ class Activity(Base):
     )
     children: Mapped[list['Activity']] = relationship(
         back_populates='parent',
+        passive_deletes=True,
+    )
+    organizations: Mapped[list['Organization']] = relationship(
+        secondary=activity_organization_association,
+        back_populates='activities',
         passive_deletes=True,
     )
