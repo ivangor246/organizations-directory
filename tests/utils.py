@@ -1,10 +1,40 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.activities import Activity
 from app.models.buildings import Building
 from app.models.cities import City
+from app.models.organizations import Organization, activity_organization_association
 from app.models.streets import Street
+
+
+async def create_organization(pg_session: AsyncSession, name: str, building_id: int) -> None:
+    organization = Organization(name=name, building_id=building_id)
+    pg_session.add(organization)
+    await pg_session.commit()
+
+
+async def get_organization(pg_session: AsyncSession, id: int) -> Organization:
+    stmt = (
+        select(Organization)
+        .options(
+            selectinload(Organization.activities),
+            selectinload(Organization.building),
+        )
+        .where(Organization.id == id)
+    )
+    result = await pg_session.execute(stmt)
+    return result.scalar_one()
+
+
+async def connect_activity_and_organization(pg_session: AsyncSession, activity_id: int, organization_id: int) -> None:
+    stmt = activity_organization_association.insert().values(
+        activity_id=activity_id,
+        organization_id=organization_id,
+    )
+    await pg_session.execute(stmt)
+    await pg_session.commit()
 
 
 async def create_activity(pg_session: AsyncSession, name: str, parent_id: int | None = None) -> None:
