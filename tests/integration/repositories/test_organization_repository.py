@@ -9,6 +9,7 @@ from tests.utils import (
     create_building,
     create_city,
     create_organization,
+    create_phone,
     create_street,
     get_organization,
 )
@@ -69,3 +70,14 @@ class TestOrganizationRepository:
         retrieved = await get_organization(pg_session, 1)
         names = {a.name for a in retrieved.activities}
         assert names == {'Delivery', 'Development'}
+
+    async def test_associate_with_phones(self, pg_session: AsyncSession):
+        repo = OrganizationRepository(pg_session)
+        await create_related_models(pg_session)
+        await create_organization(pg_session, 'Yandex', 1)
+        await create_phone(pg_session, '+7 999 999 99 99', 1)
+        await create_phone(pg_session, '+7 111 111 11 11', 1)
+
+        retrieved = await repo.get(1)
+        numbers = {p.number for p in retrieved.phones}
+        assert numbers == {'+7 999 999 99 99', '+7 111 111 11 11'}
